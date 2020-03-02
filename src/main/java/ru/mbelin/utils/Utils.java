@@ -1,5 +1,6 @@
 package ru.mbelin.utils;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Utils {
@@ -17,6 +18,12 @@ public class Utils {
     public static int getRandomInt(int min, int max) {
         return (int)(Math.random()*((max-min)+1))+min;
     }
+
+    public static int getRandomNumberUsingNextInt(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min) + min;
+    }
+
 
     public static double getRandom(int min, int max) {
         return (Math.random()*((max-min)+1))+min;
@@ -42,6 +49,7 @@ public class Utils {
         System.out.print("]\n");
     }
 
+
     public static void printArray(int[] ints,  int markIndex) {
         System.out.print("\t[");
         for (int i =0; i <= ints.length-1; i++) System.out.print((i == markIndex ? "||" : "") + ints[i] + (i < ints.length - 1 ? "," : "") );
@@ -49,6 +57,28 @@ public class Utils {
     }
 
     public static void printArray(int[][] ints) {
+
+        for (int i = 0; i < ints.length; i++) {
+            for (int j = 0; j < ints[i].length; j++) {
+                if (j == 0) System.out.print("\t[");
+                System.out.print(ints[i][j] + (j < ints[i].length - 1 ? ", " : ""));
+            }
+            System.out.print("]\n");
+        }
+    }
+
+    public static void printArray(char[][] ints) {
+
+        for (int i = 0; i < ints.length; i++) {
+            for (int j = 0; j < ints[i].length; j++) {
+                if (j == 0) System.out.print("\t[");
+                System.out.print(ints[i][j] + (j < ints[i].length - 1 ? ", " : ""));
+            }
+            System.out.print("]\n");
+        }
+    }
+
+    public static void printArray(String[][] ints) {
 
         for (int i = 0; i < ints.length; i++) {
             for (int j = 0; j < ints[i].length; j++) {
