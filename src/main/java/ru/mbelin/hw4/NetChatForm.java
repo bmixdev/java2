@@ -81,7 +81,7 @@ public class NetChatForm extends JFrame {
 
     private void setTextArea() {
         String s = textfieldMsg.getText();
-        Pattern pattern = Pattern.compile("@\\w+?:");
+        Pattern pattern = Pattern.compile("@.+?:");
         Matcher matcher = pattern.matcher(s);
         if (matcher.find()) {
             insertText(textArea, s.substring(matcher.start(), matcher.end()), heading);
@@ -133,6 +133,7 @@ public class NetChatForm extends JFrame {
      */
     private void createStyles(JTextPane editor)
     {
+        editor.setEditable(false);
         // Создание стилей
         normal = editor.addStyle(STYLE_normal, null);
         StyleConstants.setFontFamily(normal, FONT_style);

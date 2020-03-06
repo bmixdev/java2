@@ -17,6 +17,8 @@ public class TestChat {
             netChatForm.loadListContacts(list);
         });
 
+        System.out.println("exit");
+
        /*
         //https://javarush.ru/groups/posts/regulyarnye-vyrazheniya-v-java
         String s = "@Mike: Привет";
