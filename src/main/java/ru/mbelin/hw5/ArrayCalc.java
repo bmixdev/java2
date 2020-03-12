@@ -81,6 +81,8 @@ public class ArrayCalc {
         Timer.getInstance().set("recalcInThreads");
         initializeArray();
         List<float[]> listArrays = new ArrayList<>();
+        List<Thread> listThreads = new ArrayList<>();
+
         int pos = 0;
         int idx = 0;
         int start = 0;
@@ -94,12 +96,17 @@ public class ArrayCalc {
             listArrays.add(Arrays.copyOfRange(arr, start, pos));
             int finalStart = start;
             Thread thread = new Thread(() -> recalc(listArrays.get(listArrays.size() - 1), finalStart), "MyThread#"+idx);
+            listThreads.add(thread);
+            thread.start();
+        } while (pos < arr.length);
+        // ожидание потоков
+        for (Thread t: listThreads) {
             try {
-                    thread.start(); thread.join();
+                t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } while (pos < arr.length);
+        }
 
         pos = 0;
         for (float[] f: listArrays) {

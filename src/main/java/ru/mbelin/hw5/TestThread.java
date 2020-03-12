@@ -6,8 +6,7 @@ import ru.mbelin.utils.ConsoleColors;
 public class TestThread {
 
     public static void main(String[] args) {
-            ArrayCalc array= new ArrayCalc(100000000, 6);
-
+            ArrayCalc array= new ArrayCalc(100_000_000, 12);
             ConsoleColors.print("Расчет массива в основном потоке", Color.GREEN);
             array.recalcInMain();
             //array.print();
