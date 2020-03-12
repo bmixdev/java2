@@ -49,6 +49,12 @@ public class Utils {
         System.out.print("]\n");
     }
 
+    public static void printArray(float[] ints) {
+        System.out.print("\t[");
+        for (int i =0; i <= ints.length-1; i++) System.out.print(ints[i] + (i < ints.length - 1 ? "," : "") );
+        System.out.print("]\n");
+    }
+
 
     public static void printArray(int[] ints,  int markIndex) {
         System.out.print("\t[");
