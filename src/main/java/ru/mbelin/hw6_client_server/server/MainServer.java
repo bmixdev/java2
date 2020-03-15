@@ -1,6 +1,7 @@
 package ru.mbelin.hw6_client_server.server;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class MainServer {
 
@@ -11,6 +12,5 @@ public class MainServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
