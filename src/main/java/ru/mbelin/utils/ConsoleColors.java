@@ -85,4 +85,8 @@ public class ConsoleColors {
         System.out.println(s + msg + RESET);
     }
 
+    public static void print(String msg, String color) {
+        System.out.println(color + msg + RESET);
+    }
+
 }

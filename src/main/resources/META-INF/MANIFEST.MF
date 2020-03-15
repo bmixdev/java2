@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: ru.mbelin.hw6_client_server.server.MainServer
+
