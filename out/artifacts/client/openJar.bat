@@ -1,0 +1,1 @@
+cmd /k java -jar "%1"
