@@ -40,23 +40,6 @@ public class ClientSocketThread extends Thread {
 
 
     private boolean getSystemInfo(String msg) {
-        /*
-        Pattern pattern = Pattern.compile("#\\[(.+?):(.+?)\\]#");
-        Matcher matcher = pattern.matcher(msg);
-        if (matcher.find()) {
-            String paramCode = matcher.group(1);
-            String paramValue = matcher.group(2);
-            switch (paramCode.toUpperCase()) {
-                case ConstantMessage.SYSCODE_UUID :
-                    uuid = paramValue;
-                    break;
-                case ConstantMessage.SYSCODE_USER :
-                    user = paramValue;
-                    break;
-            }
-            return true;
-        }
-        */
         if (msg.startsWith("#")) {
             try {
             socketAction.executeCommand(this, msg);
