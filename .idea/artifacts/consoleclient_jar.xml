@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="consoleclient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/consoleclient_jar</output-path>
+    <root id="archive" name="consoleclient.jar">
+      <element id="module-output" name="consoleclient" />
+      <element id="module-output" name="java2" />
+    </root>
+  </artifact>
+</component>

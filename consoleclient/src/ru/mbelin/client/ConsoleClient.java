@@ -1,6 +1,6 @@
-package ru.mbelin.hw6_client_server.client;
+package ru.mbelin.client;
 
-import ru.mbelin.hw6_client_server.ConstantMessage;
+import ru.mbelin.utils.ConstantMessage;
 import ru.mbelin.utils.Color;
 import ru.mbelin.utils.ConsoleColors;
 
@@ -34,10 +34,12 @@ public class ConsoleClient {
             this.instance = this;
             this.uuid = UUID.randomUUID();
             this.user = user;
+            /*
             sendMsg(String.format("#[%s:%s]#", ConstantMessage.SYSCODE_UUID, this.uuid));
             sendMsg(String.format("#[%s:%s]#", ConstantMessage.SYSCODE_USER, this.user));
             ConsoleColors.print(String.format("<< Успешно подключен к серверу: %s:%s >>", this.SERVER_HOST, this.SERVER_PORT), ConsoleColors.PURPLE_UNDERLINED);
             ConsoleColors.print(String.format("USER: %s\t UUID: %s", this.user, this.uuid), Color.GREEN);
+            */
         }
         catch (ConnectException e) {
             ConsoleColors.print(String.format("Сервер %s:%s не доступен!", this.SERVER_HOST, this.SERVER_PORT), Color.RED);
@@ -48,6 +50,17 @@ public class ConsoleClient {
         }
     }
 
+    void waitAndExit(long millis) {
+
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            exit();
+        }
+    }
 
     private void read() {
         try {
@@ -58,10 +71,11 @@ public class ConsoleClient {
                     exit();
                     break;
                 }
-                System.out.println("[SERVER]->: " + msgFromServer);
+                System.out.println(msgFromServer);
             }
         } catch (Exception e) {
-            ConsoleColors.print("Соединение с серверном закрыто: " + e.getMessage(), Color.RED);
+            ConsoleColors.print("Соединение с серверном закрыто: " + e.getMessage() +" \nОкно автоматически закроется через 5 сек.", Color.RED);
+            waitAndExit(5000);
         }
     }
 

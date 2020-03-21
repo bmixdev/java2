@@ -1,7 +1,6 @@
-package ru.mbelin.hw6_client_server.server;
+package ru.mbelin.server;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 public class MainServer {
 

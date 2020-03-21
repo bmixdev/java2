@@ -89,4 +89,8 @@ public class ConsoleColors {
         System.out.println(color + msg + RESET);
     }
 
+    public static String get(String msg, String color) {
+        return color + msg + RESET;
+    }
+
 }
