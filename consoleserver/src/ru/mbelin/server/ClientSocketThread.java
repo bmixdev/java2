@@ -16,6 +16,8 @@ import ru.mbelin.server.service.BaseAuthService;
 
 public class ClientSocketThread extends Thread {
 
+    private static final long TIME_OUT_AUTH = 30 * 1000; // 30 сек
+
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
@@ -23,6 +25,7 @@ public class ClientSocketThread extends Thread {
     private ClientSocketThread instance;
     private IClientSocketAction socketAction;
     private boolean isAuthorized;
+    private AuthorizedTimer authorizedTimer;
 
     public ClientSocketThread(Socket socket, IClientSocketAction socketAction) throws IOException {
         this.socket = socket;
@@ -53,6 +56,7 @@ public class ClientSocketThread extends Thread {
 
     @Override
     public void run() {
+        waitAuthorizedSocket();
         String msgFromClient;
         while (true) {
             try {
@@ -103,7 +107,11 @@ public class ClientSocketThread extends Thread {
     }
 
     public String getUser() {
-        return userData.getLogin();
+        try {
+            return userData.getLogin();
+        } catch (NullPointerException npe) {
+            return null;
+        }
     }
 
     public String getUuid() {
@@ -134,4 +142,43 @@ public class ClientSocketThread extends Thread {
                 ", userData=" + userData +
                 '}';
     }
+
+
+    private void waitAuthorizedSocket() {
+        Thread authWaiter = new Thread(()-> {
+            if (authorizedTimer == null)
+                authorizedTimer = new AuthorizedTimer(TIME_OUT_AUTH);
+            while (true) {
+                if (isAuthorized) return;
+                if (authorizedTimer.timeIsUp()) {
+                    socketAction.sendForward(this, ConsoleServer.errorMsg("Допустимое время на авторизацию ("+authorizedTimer.timeout+" мсек) на сервере - истекло\nСервер автоматически разорвал соединение!"));
+                    socketAction.executeCommand(this, ConstantMessage.CMD_END);
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        authWaiter.start();
+    }
+
+    private class AuthorizedTimer {
+        long startTime;
+        long timeout;
+
+        AuthorizedTimer (long timeout) {
+            this.startTime = System.currentTimeMillis();
+            this.timeout = timeout;
+        }
+
+        boolean timeIsUp() {
+            long deltaTime = System.currentTimeMillis() - this.startTime;
+            if (deltaTime >= timeout) return true;
+            else return false;
+        }
+    }
+
 }

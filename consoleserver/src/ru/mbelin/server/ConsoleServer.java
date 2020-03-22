@@ -88,9 +88,9 @@ public class ConsoleServer {
             public void executeCommand(ClientSocketThread socket, String command) {
                 String[] parts = command.split("\\s");
                 if (parts.length > 0 && parts[0].startsWith("#")) {
-                    String firstCmd = parts[0].substring(1).toUpperCase();
+                    String firstCmd = parts[0].toUpperCase();
                     if (ConstantMessage.CMD_END.toUpperCase().equals(firstCmd)) {
-                        System.out.printf("\tКлиент %s отключился%n", socket.getUser());
+                        System.out.printf("\tКлиент <<%s>> отключился%n", socket.getUser() != null ? socket.getUser() : socket.toString());
                         socket.close();
                     }
                     else if (ConstantMessage.CMD_USERLIST.toUpperCase().equals(firstCmd)) {
@@ -239,14 +239,15 @@ public class ConsoleServer {
     }
 
     private boolean executeSystemCommand(String msg, Boolean needBreak) {
-        Pattern pattern = Pattern.compile("^#(.+?)( |$)");
-        Matcher matcher = pattern.matcher(msg);
-        if (matcher.find()) {
-            String paramCode = matcher.group(1);
-            //ConsoleColors.print(matcher.group(1).toString(), ConsoleColors.GREEN_BOLD_BRIGHT);
-            //ConsoleColors.print(matcher.group(2).toString(),ConsoleColors.GREEN);
-            switch (paramCode.toUpperCase()) {
-                case ConstantMessage.CMD_END : {
+        if (msg.startsWith("#")) {
+            Pattern pattern = Pattern.compile("^(.+?)( |$)");
+            Matcher matcher = pattern.matcher(msg);
+            if (matcher.find()) {
+                String paramCode = matcher.group(1);
+                //ConsoleColors.print(matcher.group(1).toString(), ConsoleColors.GREEN_BOLD_BRIGHT);
+                //ConsoleColors.print(matcher.group(2).toString(),ConsoleColors.GREEN);
+                switch (paramCode.toUpperCase()) {
+                    case ConstantMessage.CMD_END: {
                         ConsoleColors.print("\tВыход из консольного ввода", ConsoleColors.PURPLE_UNDERLINED);
                         if (this.socketListener.isAlive())
                             this.socketListener.interrupt();
@@ -259,30 +260,31 @@ public class ConsoleServer {
                         }
                         close();
                         needBreak = true;
-                    break;
-                }
-                case ConstantMessage.CMD_USERLIST : {
-                    cmdGetUserList(TypePrint.CONSOLE, null);
-                    break;
-                }
-                case  ConstantMessage.CMD_KILL : {
-                    pattern = Pattern.compile("^#(.+?) (.+?)$");
-                    matcher = pattern.matcher(msg);
-                    if (matcher.find()) {
-                        killUser(matcher.group(2));
+                        break;
                     }
-                    break;
-                }
-                case  ConstantMessage.CMD_TO_USER : {
-                    pattern = Pattern.compile("^#(.+?) (.+?) (.+?)$");
-                    matcher = pattern.matcher(msg);
-                    if (matcher.find()) {
-                        sendToUserFromServer(matcher.group(2), matcher.group(3));
+                    case ConstantMessage.CMD_USERLIST: {
+                        cmdGetUserList(TypePrint.CONSOLE, null);
+                        break;
                     }
-                    break;
+                    case ConstantMessage.CMD_KILL: {
+                        pattern = Pattern.compile("^#(.+?) (.+?)$");
+                        matcher = pattern.matcher(msg);
+                        if (matcher.find()) {
+                            killUser(matcher.group(2));
+                        }
+                        break;
+                    }
+                    case ConstantMessage.CMD_TO_USER: {
+                        pattern = Pattern.compile("^#(.+?) (.+?) (.+?)$");
+                        matcher = pattern.matcher(msg);
+                        if (matcher.find()) {
+                            sendToUserFromServer(matcher.group(2), matcher.group(3));
+                        }
+                        break;
+                    }
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }
