@@ -1,9 +1,13 @@
 package ru.mbelin.server.service;
 
+import ru.mbelin.server.postgres.DBHelper;
 import ru.mbelin.utils.ComStatePrd;
 import ru.mbelin.utils.ConsoleColors;
 
 import javax.jws.soap.SOAPBinding;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,10 +18,29 @@ public class BaseAuthService implements AuthService {
     private static final String defaultPassword = "123";
     private ComStatePrd state;
     private List<UserData> userDataList;
+    private DBHelper dbHelper;
 
     public BaseAuthService() {
         this.userDataList = new ArrayList<>();
         this.state = ComStatePrd.READY;
+        try {
+            this.dbHelper = DBHelper.getHelper();
+        } catch (SQLException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        fillUserDataList();
+    }
+
+    private void fillUserDataList() {
+        try {
+            ResultSet rs = dbHelper.getStatement().executeQuery("select * from users");
+            while (rs.next()) {
+                    UserData userData = new UserData(rs.getString("username"), rs.getString("password"), rs.getString("color"));
+                    this.userDataList.add(userData);
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -40,6 +63,16 @@ public class BaseAuthService implements AuthService {
             if (login.equals(u.login)) throw new AuthException("Логин \""+login+"\" уже занят другим пользователем!");
         }
         UserData userData = new UserData(login, password, color);
+        try {
+            PreparedStatement ps =dbHelper.getConnection().prepareStatement("INSERT INTO users(username, password, uid, color) VALUES(?,?,?,?)");
+            ps.setString(1, userData.login);
+            ps.setString(2, userData.password);
+            ps.setString(3, userData.uid);
+            ps.setString(4, userData.color);
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         userDataList.add(userData);
         return  userData;
     }
