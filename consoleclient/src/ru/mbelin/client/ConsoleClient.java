@@ -1,6 +1,5 @@
 package ru.mbelin.client;
 
-import ru.mbelin.utils.ComStatePrd;
 import ru.mbelin.utils.ConstantMessage;
 import ru.mbelin.utils.Color;
 import ru.mbelin.utils.ConsoleColors;
@@ -42,6 +41,8 @@ public class ConsoleClient {
             ConsoleColors.print(String.format("USER: %s\t UUID: %s", this.user, this.uuid), Color.GREEN);
             */
 
+            HistoryMessageFactory.getInstance(this.uuid.toString()).load();
+            HistoryMessageFactory.getInstance(this.uuid.toString()).printLastMsg(100);
         }
         catch (ConnectException e) {
             ConsoleColors.print(String.format("Сервер %s:%s не доступен!", this.SERVER_HOST, this.SERVER_PORT), Color.RED);
@@ -54,7 +55,7 @@ public class ConsoleClient {
 
     void waitAndExit(long millis) {
 
-        HistoryMessageFactory.getInstance().save();
+        HistoryMessageFactory.getInstance(this.uuid.toString()).save();
 
         try {
             Thread.sleep(millis);
@@ -91,7 +92,6 @@ public class ConsoleClient {
                     }
                 }
                 System.out.println(msgFromServer);
-                HistoryMessageFactory.getInstance(this.uuid.toString()).add(msgFromServer);
             }
         } catch (Exception e) {
             ConsoleColors.print("Соединение с серверном закрыто: " + e.getMessage() +" \nОкно автоматически закроется через 5 сек.", Color.RED);

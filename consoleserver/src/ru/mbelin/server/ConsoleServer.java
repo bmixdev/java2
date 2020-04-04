@@ -1,8 +1,11 @@
 package ru.mbelin.server;
 
+import ru.mbelin.server.postgres.DBHelper;
+import ru.mbelin.server.postgres.DBUpdater;
 import ru.mbelin.server.service.AuthException;
 import ru.mbelin.server.service.BaseAuthService;
 import ru.mbelin.server.service.UserData;
+import ru.mbelin.utils.Color;
 import ru.mbelin.utils.ConstantMessage;
 import ru.mbelin.utils.ConsoleColors;
 
@@ -11,6 +14,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -26,6 +30,7 @@ public class ConsoleServer {
     private Thread inputThread;
     private IClientSocketAction socketAction;
     private BaseAuthService authService;
+    private DBHelper dbHelper;
 
 
     private ConsoleServer(int port) throws IOException {
@@ -33,6 +38,14 @@ public class ConsoleServer {
         this.serverSocket = new ServerSocket(port);
         this.sockets = new LinkedList<>();
         this.socketListener = getSocketListener();
+        try {
+            this.dbHelper = DBHelper.getHelper();
+            DBUpdater.update();
+        } catch (SQLException |ClassNotFoundException e) {
+            ConsoleColors.print("<<Ошибка запуска сервера>>", Color.RED);
+            e.printStackTrace();
+            System.exit(0);
+        }
         this.authService = new BaseAuthService();
         ConsoleColors.print("<< Сервер запущен <<"+ InetAddress.getLocalHost().getHostAddress() + ":" + port+">> >>", ConsoleColors.CYAN_UNDERLINED);
         this.socketListener.start();
@@ -394,6 +407,7 @@ public class ConsoleServer {
             e.printStackTrace();
         }
         finally {
+            this.dbHelper.close();
             ConsoleColors.print("<< Сервер остановлен >>" , ConsoleColors.CYAN_UNDERLINED);
             System.exit(1);
         }
