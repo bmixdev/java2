@@ -40,6 +40,9 @@ public class ConsoleClient {
             ConsoleColors.print(String.format("<< Успешно подключен к серверу: %s:%s >>", this.SERVER_HOST, this.SERVER_PORT), ConsoleColors.PURPLE_UNDERLINED);
             ConsoleColors.print(String.format("USER: %s\t UUID: %s", this.user, this.uuid), Color.GREEN);
             */
+
+            HistoryMessageFactory.getInstance(this.uuid.toString()).load();
+            HistoryMessageFactory.getInstance(this.uuid.toString()).printLastMsg(100);
         }
         catch (ConnectException e) {
             ConsoleColors.print(String.format("Сервер %s:%s не доступен!", this.SERVER_HOST, this.SERVER_PORT), Color.RED);
@@ -51,6 +54,8 @@ public class ConsoleClient {
     }
 
     void waitAndExit(long millis) {
+
+        HistoryMessageFactory.getInstance(this.uuid.toString()).save();
 
         try {
             Thread.sleep(millis);
@@ -72,6 +77,7 @@ public class ConsoleClient {
                     break;
                 }
                 System.out.println(msgFromServer);
+                HistoryMessageFactory.getInstance(this.uuid.toString()).add(msgFromServer);
             }
         } catch (Exception e) {
             ConsoleColors.print("Соединение с серверном закрыто: " + e.getMessage() +" \nОкно автоматически закроется через 5 сек.", Color.RED);
