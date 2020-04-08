@@ -10,13 +10,13 @@ public class HistoryMessageFactory {
     private String uuid;
     private List<String> historyList;
 
-    private HistoryMessageFactory(String uuid) {
+    private HistoryMessageFactory() {
         this.historyList = new ArrayList<>();
-        this.uuid = uuid + ".txt";
+        this.uuid =  "1.txt";
     }
-    public static HistoryMessageFactory getInstance(String uuid) {
+    public static HistoryMessageFactory getInstance() {
         if (instance == null) {
-            instance = new HistoryMessageFactory(uuid);
+            instance = new HistoryMessageFactory();
         }
         return instance;
     }

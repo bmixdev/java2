@@ -41,8 +41,8 @@ public class ConsoleClient {
             ConsoleColors.print(String.format("USER: %s\t UUID: %s", this.user, this.uuid), Color.GREEN);
             */
 
-            HistoryMessageFactory.getInstance(this.uuid.toString()).load();
-            HistoryMessageFactory.getInstance(this.uuid.toString()).printLastMsg(100);
+            HistoryMessageFactory.getInstance().load();
+            HistoryMessageFactory.getInstance().printLastMsg(100);
         }
         catch (ConnectException e) {
             ConsoleColors.print(String.format("Сервер %s:%s не доступен!", this.SERVER_HOST, this.SERVER_PORT), Color.RED);
@@ -55,7 +55,7 @@ public class ConsoleClient {
 
     void waitAndExit(long millis) {
 
-        HistoryMessageFactory.getInstance(this.uuid.toString()).save();
+        HistoryMessageFactory.getInstance().save();
 
         try {
             Thread.sleep(millis);
