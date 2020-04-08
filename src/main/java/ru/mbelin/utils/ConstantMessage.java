@@ -13,4 +13,5 @@ public class ConstantMessage {
     public final static String CMD_AUTH = "#AUTH";
     public final static String CMD_REGISTER = "#REG";
     public final static String CMD_PRINT_FIRST = "#FIRSTHELP";
+    public final static String CMD_AUTH_SUCCESS = "#AUTHSUCCESS";
 }

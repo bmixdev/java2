@@ -16,7 +16,7 @@ import ru.mbelin.server.service.BaseAuthService;
 
 public class ClientSocketThread extends Thread {
 
-    private static final long TIME_OUT_AUTH = 30 * 1000; // 30 сек
+    private static final long TIME_OUT_AUTH = 600 * 1000; // 600 сек
 
     private Socket socket;
     private DataInputStream inputStream;

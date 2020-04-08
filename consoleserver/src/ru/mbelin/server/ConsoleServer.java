@@ -17,6 +17,8 @@ import java.net.SocketException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,9 +33,16 @@ public class ConsoleServer {
     private IClientSocketAction socketAction;
     private BaseAuthService authService;
     private DBHelper dbHelper;
+    private ExecutorService executorService;
 
 
     private ConsoleServer(int port) throws IOException {
+
+        this.executorService = Executors.newCachedThreadPool();
+        this.executorService.submit(this::doInput);
+        this.authService = new BaseAuthService();
+        this.executorService.submit(this.authService::start);
+
         this.port = port;
         this.serverSocket = new ServerSocket(port);
         this.sockets = new LinkedList<>();
@@ -46,17 +55,10 @@ public class ConsoleServer {
             e.printStackTrace();
             System.exit(0);
         }
-        this.authService = new BaseAuthService();
+
         ConsoleColors.print("<< Сервер запущен <<"+ InetAddress.getLocalHost().getHostAddress() + ":" + port+">> >>", ConsoleColors.CYAN_UNDERLINED);
         this.socketListener.start();
-        this.inputThread = new Thread(this::doInput);
-        this.inputThread.start();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        this.authService.start();
+
         printHelpServerCommand();
 
         socketAction = new IClientSocketAction() {

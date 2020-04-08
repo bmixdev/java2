@@ -41,8 +41,8 @@ public class ConsoleClient {
             ConsoleColors.print(String.format("USER: %s\t UUID: %s", this.user, this.uuid), Color.GREEN);
             */
 
-            HistoryMessageFactory.getInstance(this.uuid.toString()).load();
-            HistoryMessageFactory.getInstance(this.uuid.toString()).printLastMsg(100);
+            HistoryMessageFactory.getInstance().load();
+            HistoryMessageFactory.getInstance().printLastMsg(100);
         }
         catch (ConnectException e) {
             ConsoleColors.print(String.format("Сервер %s:%s не доступен!", this.SERVER_HOST, this.SERVER_PORT), Color.RED);
@@ -55,7 +55,7 @@ public class ConsoleClient {
 
     void waitAndExit(long millis) {
 
-        HistoryMessageFactory.getInstance(this.uuid.toString()).save();
+        HistoryMessageFactory.getInstance().save();
 
         try {
             Thread.sleep(millis);
@@ -76,8 +76,22 @@ public class ConsoleClient {
                     exit();
                     break;
                 }
+                if (msgFromServer.toUpperCase().startsWith("#")) {
+                    String[] parts = msgFromServer.split("\\s");
+                    String command = parts[0];
+                    if (command.toUpperCase().equals(ConstantMessage.CMD_AUTH_SUCCESS)) {
+                        StringBuilder msgAuthSuccess = new StringBuilder();
+                        if (parts.length > 1)
+                            for (int i = 1; i < parts.length ; i++) {
+                                msgAuthSuccess.append(parts[i]).append("\n");
+                            }
+                        HistoryMessageFactory.getInstance().load();
+                        HistoryMessageFactory.getInstance().printLastMsg(100);
+                        System.out.println(msgAuthSuccess);
+                        continue;
+                    }
+                }
                 System.out.println(msgFromServer);
-                HistoryMessageFactory.getInstance(this.uuid.toString()).add(msgFromServer);
             }
         } catch (Exception e) {
             ConsoleColors.print("Соединение с серверном закрыто: " + e.getMessage() +" \nОкно автоматически закроется через 5 сек.", Color.RED);
