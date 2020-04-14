@@ -19,11 +19,14 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConsoleServer {
 
+    private static Logger logger = Logger.getLogger(ConsoleServer.class.getName());
     private static ConsoleServer instance;
     private int port;
     private ServerSocket serverSocket;
@@ -51,12 +54,15 @@ public class ConsoleServer {
             this.dbHelper = DBHelper.getHelper();
             DBUpdater.update();
         } catch (SQLException |ClassNotFoundException e) {
+            logger.log(Level.WARNING, "<<Ошибка запуска сервера>> : " + e.getStackTrace().toString());
             ConsoleColors.print("<<Ошибка запуска сервера>>", Color.RED);
             e.printStackTrace();
             System.exit(0);
         }
 
         ConsoleColors.print("<< Сервер запущен <<"+ InetAddress.getLocalHost().getHostAddress() + ":" + port+">> >>", ConsoleColors.CYAN_UNDERLINED);
+        logger.log(Level.INFO, "<< Сервер запущен <<"+ InetAddress.getLocalHost().getHostAddress() + ":" + port+">> >>");
+
         this.socketListener.start();
 
         printHelpServerCommand();
@@ -101,6 +107,7 @@ public class ConsoleServer {
 
             @Override
             public void executeCommand(ClientSocketThread socket, String command) {
+                logger.log(Level.INFO, "\tКлиент <<" + socket.getUser()+">> выполняет команду: " + command);
                 String[] parts = command.split("\\s");
                 if (parts.length > 0 && parts[0].startsWith("#")) {
                     String firstCmd = parts[0].toUpperCase();
@@ -177,6 +184,7 @@ public class ConsoleServer {
                             if (!serverSocket.isClosed()) {
                                 clientSocket = serverSocket.accept();
                                 ClientSocketThread newClient = new ClientSocketThread(clientSocket, socketAction);
+                                logger.log(Level.INFO, "\tПодключился новый клиент: " + clientSocket.toString());
                                 /*
                                 ConsoleColors.print("\tПодключился новый клиент: " + clientSocket.toString(), Color.BLUE);
                                 // переделать на ожидание аутентификации нового клиента
@@ -411,6 +419,7 @@ public class ConsoleServer {
         finally {
             this.dbHelper.close();
             ConsoleColors.print("<< Сервер остановлен >>" , ConsoleColors.CYAN_UNDERLINED);
+            logger.log(Level.INFO, "<< Сервер остановлен >>");
             System.exit(1);
         }
     }
